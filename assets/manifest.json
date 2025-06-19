@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Mandarin Blueprint Prop Customizer",
+  "version": "1.0.0",
+  "description": "Create, save, and manage your own Mandarin Blueprint props.",
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://courses.mandarinblueprint.com/*"
+      ],
+      "js": [
+        "main.bundle.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "32": "icon32.png"
+  }
+}

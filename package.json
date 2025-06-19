@@ -1,0 +1,22 @@
+{
+  "name": "mandarin-bluepring-prop-customizer",
+  "version": "1.0.0",
+  "description": "Create, save, and manage your own Mandarin Blueprint props.",
+  "license": "GNU GPLv3",
+  "author": "Aviad Pineles",
+  "sideEffects": false,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack",
+    "start": "ts-node index.ts"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^13.0.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
+  },
+  "nx": {}
+}

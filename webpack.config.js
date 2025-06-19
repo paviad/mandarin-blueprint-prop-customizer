@@ -1,0 +1,43 @@
+const path = require("path");
+const webpack = require("webpack");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+
+module.exports = {
+  entry: {
+    main: "./src/index.ts",
+  },
+  mode: "production",
+  optimization: {
+    usedExports: true,
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
+  },
+  output: {
+    filename: "[name].bundle.js",
+    path: path.resolve(__dirname, "dist"),
+  },
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [{ from: "./assets" }],
+    }),
+    new webpack.DefinePlugin({
+      self: "global",
+    }),
+    new webpack.ids.HashedModuleIdsPlugin({
+      context: __dirname,
+      hashFunction: "sha256",
+      hashDigest: "hex",
+      hashDigestLength: 20,
+    }),
+  ],
+};
