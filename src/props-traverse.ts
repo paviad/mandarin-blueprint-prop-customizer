@@ -12,10 +12,10 @@ export async function addUiToH2PickAProp() {
     const text = h2.textContent?.trim() || "";
     if (
       text.startsWith("Pick a prop for ") &&
-      /[\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}]$/u.test(text)
+      /[\u2e80–\u2eff\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}]$/u.test(text)
     ) {
       const lastChineseChar = text.match(
-        /(?<=for )\s*([\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}])/u
+        /(?<=for )\s*([\u2e80–\u2eff\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}])/u
       )?.[1];
       if (lastChineseChar) {
         isTraversePickAPropPage = true;
