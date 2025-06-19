@@ -30,7 +30,7 @@ function getPropLines(h6: HTMLHeadingElement) {
   console.log(result);
 
   const firstChineseChars = result.map((text) => {
-    const match = text.match(/[\u4e00-\u9fff]/);
+    const match = text.match(/[\u4e00-\u9fff\u20000-\u2A6D6]/);
     return match ? match[0] : "";
   });
   console.log(firstChineseChars);
@@ -88,8 +88,8 @@ export function addUiToH1PickAProp() {
   const h1s = Array.from(document.querySelectorAll("h1"));
   for (const h1 of h1s) {
     const text = h1.textContent?.trim() || "";
-    if (text.startsWith("Pick a Prop ") && /[\u4e00-\u9fff]$/.test(text)) {
-      const lastChineseChar = text.match(/([\u4e00-\u9fff])$/)?.[1];
+    if (text.startsWith("Pick a Prop ") && /[\u4e00-\u9fff\u20000-\u2A6D6]$/.test(text)) {
+      const lastChineseChar = text.match(/([\u4e00-\u9fff\u20000-\u2A6D6])$/)?.[1];
       addMappingUi(db, lastChineseChar!, h1);
     }
   }
