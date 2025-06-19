@@ -26,7 +26,7 @@ export async function getPropLines(h6: HTMLHeadingElement) {
   }
 
   const firstChineseChars = result.map((text) => {
-    const match = text.match(/[\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u20000-\u2A6D6]/);
+    const match = text.match(/[\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}]/u);
     return match ? match[0] : "";
   });
 
@@ -43,10 +43,10 @@ export async function addUiToH1PickAProp() {
     const text = h1.textContent?.trim() || "";
     if (
       text.startsWith("Pick a Prop ") &&
-      /[\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u20000-\u2A6D6]$/.test(text)
+      /[\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}]$/u.test(text)
     ) {
       const lastChineseChar = text.match(
-        /(?<= Prop )\s*([\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u20000-\u2A6D6])/
+        /(?<= Prop )\s*([\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}])/u
       )?.[1]!;
       isMbPickAPropPage = true;
       mbPickAPropCharacter = lastChineseChar;
