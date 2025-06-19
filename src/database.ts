@@ -6,8 +6,18 @@ export interface Database {
   actorMap: Record<string, string>;
 }
 
-export function loadDatabase(): Database {
-  const data = localStorage.getItem(DATABASE_KEY);
+async function getFromStorage(key: string): Promise<string | null> {
+  const result = await chrome.storage.sync.get(key);
+  return result[key] as string | null;
+}
+
+async function saveToStorage(key: string, value: string): Promise<void> {
+  await chrome.storage.sync.set({ [key]: value });
+}
+
+export async function loadDatabase(): Promise<Database> {
+  // const data = localStorage.getItem(DATABASE_KEY);
+  const data = await getFromStorage(DATABASE_KEY);
   let db: Partial<Database> = {};
   if (data) {
     try {
@@ -23,6 +33,7 @@ export function loadDatabase(): Database {
   };
 }
 
-export function saveDatabase(db: Database): void {
-  localStorage.setItem(DATABASE_KEY, JSON.stringify(db));
+export async function saveDatabase(db: Database): Promise<void> {
+  // localStorage.setItem(DATABASE_KEY, JSON.stringify(db));
+  saveToStorage(DATABASE_KEY, JSON.stringify(db));
 }

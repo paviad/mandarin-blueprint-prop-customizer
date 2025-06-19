@@ -15,8 +15,8 @@ function addUiToPropsLines() {
   }
 }
 
-function getPropLines(h6: HTMLHeadingElement) {
-  const db = loadDatabase();
+async function getPropLines(h6: HTMLHeadingElement) {
+  const db = await loadDatabase();
   const result: string[] = [];
   let el = h6.nextElementSibling;
   const paragraphs: HTMLParagraphElement[] = [];
@@ -82,8 +82,8 @@ function addMappingUi(db: Database, char: string, p: HTMLElement) {
   p.appendChild(block);
 }
 
-export function addUiToH1PickAProp() {
-  const db = loadDatabase();
+export async function addUiToH1PickAProp() {
+  const db = await loadDatabase();
 
   const h1s = Array.from(document.querySelectorAll("h1"));
   for (const h1 of h1s) {
