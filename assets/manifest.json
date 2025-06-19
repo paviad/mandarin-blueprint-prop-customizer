@@ -9,7 +9,8 @@
   "content_scripts": [
     {
       "matches": [
-        "https://courses.mandarinblueprint.com/*"
+        "https://courses.mandarinblueprint.com/*",
+        "https://traverse.link/*"
       ],
       "js": [
         "main.bundle.js"

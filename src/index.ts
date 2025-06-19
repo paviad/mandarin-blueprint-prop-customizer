@@ -1,7 +1,12 @@
-import { loadDatabase } from './database';
-import { getProps } from './props';
+import { domUpdate, startMutationObserver } from "./mutation-observer";
+import { getProps } from "./props";
 
 window.addEventListener("load", async () => {
-  await loadDatabase();
-  await getProps();
+  domUpdate.subscribe(() => {
+    getProps();
+  });
+
+  // await getProps();
+
+  startMutationObserver();
 });
