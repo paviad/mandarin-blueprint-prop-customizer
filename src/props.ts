@@ -1,19 +1,21 @@
-import { loadDatabase, saveDatabase } from "./database";
+import { Database, loadDatabase, saveDatabase } from "./database";
 
 export function getProps() {
-  console.log("getProps called");
+  addUiToPropsLines();
+  addUiToH1PickAProp();
+}
+
+function addUiToPropsLines() {
   const h6 = Array.from(document.querySelectorAll("h6")).find(
     (el) => el.textContent?.trim() === "Prop(s):"
   );
 
-  console.log(h6);
-
   if (h6) {
-    getProps2(h6);
+    getPropLines(h6);
   }
 }
 
-function getProps2(h6: HTMLHeadingElement) {
+function getPropLines(h6: HTMLHeadingElement) {
   const db = loadDatabase();
   const result: string[] = [];
   let el = h6.nextElementSibling;
@@ -37,41 +39,59 @@ function getProps2(h6: HTMLHeadingElement) {
     const char = firstChineseChars[i];
     if (!char) return;
 
-    const mapped = db.propMap[char] ?? "";
-    // Remove any existing mapping block
-    const existing = p.querySelector(".prop-map-block");
-    if (existing) existing.remove();
-
-    const block = document.createElement("span");
-    block.className = "prop-map-block";
-    block.style.marginLeft = "1em";
-
-    const text = document.createElement("span");
-    if (mapped) {
-      text.textContent = `Mapped: ${mapped}`;
-    } else {
-      text.textContent = `Not Mapped`;
-    }
-
-    const editBtn = document.createElement("button");
-    editBtn.textContent = "Edit";
-    editBtn.style.marginLeft = "0.5em";
-
-    editBtn.onclick = () => {
-      const newVal = prompt(`Edit mapping for "${char}"`, mapped);
-      if (newVal) {
-        db.propMap[char] = newVal;
-        saveDatabase(db);
-        text.textContent = `Mapped: ${newVal}`;
-      } else {
-        delete db.propMap[char];
-        saveDatabase(db);
-        text.textContent = `(Not Mapped)`;
-      }
-    };
-
-    block.appendChild(text);
-    block.appendChild(editBtn);
-    p.appendChild(block);
+    addMappingUi(db, char, p);
   });
+}
+
+function addMappingUi(db: Database, char: string, p: HTMLElement) {
+  const mapped = db.propMap[char] ?? "";
+  // Remove any existing mapping block
+  const existing = p.querySelector(".prop-map-block");
+  if (existing) existing.remove();
+
+  const block = document.createElement("span");
+  block.className = "prop-map-block";
+  block.style.marginLeft = "1em";
+
+  const text = document.createElement("span");
+  if (mapped) {
+    text.textContent = `Mapped: ${mapped}`;
+  } else {
+    text.textContent = `Not Mapped`;
+  }
+
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "Edit";
+  editBtn.style.marginLeft = "0.5em";
+
+  editBtn.onclick = () => {
+    const newVal = prompt(`Edit mapping for "${char}"`, mapped);
+    if (newVal) {
+      db.propMap[char] = newVal;
+      saveDatabase(db);
+      text.textContent = `Mapped: ${newVal}`;
+    } else {
+      delete db.propMap[char];
+      saveDatabase(db);
+      text.textContent = `(Not Mapped)`;
+    }
+  };
+
+  block.appendChild(text);
+  block.appendChild(editBtn);
+  p.appendChild(block);
+}
+
+export function addUiToH1PickAProp() {
+  const db = loadDatabase();
+
+  const h1s = Array.from(document.querySelectorAll("h1"));
+  for (const h1 of h1s) {
+    const text = h1.textContent?.trim() || "";
+    if (text.startsWith("Pick a Prop ") && /[\u4e00-\u9fff]$/.test(text)) {
+      const lastChineseChar = text.match(/([\u4e00-\u9fff])$/)?.[1];
+      addMappingUi(db, lastChineseChar!, h1);
+    }
+  }
+  return null;
 }
