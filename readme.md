@@ -28,9 +28,11 @@ Install the latest stable version directly from the [Chrome Web Store](https://c
 6. Click "Load unpacked" and select the `dist` folder.
 
 ## Usage
-- Visit [Mandarin Blueprint](https://courses.mandarinblueprint.com/).
+
+- Visit [Mandarin Blueprint](https://courses.mandarinblueprint.com/) or [Traverse.link](https://traverse.link).
 - The extension will activate automatically.
-- Use the UI to create, edit, and manage your props.
+- Visit a "Make a Movie" or "Pick a Prop" page on MB, or a "Pick a prop for..." on Traverse, and you will be able to enter your own prop association.
+- Associations entered are automatically shared with both MB and Traverse.
 
 ## Development
 - Source code is in the `src/` directory (written in TypeScript).

@@ -40,3 +40,8 @@ store-dist/**/*
 
 # ignore yarn.lock
 yarn.lock
+
+# miscellaneous
+bin/
+secrets/
+setvars.cmd
