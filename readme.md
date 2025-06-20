@@ -1,5 +1,7 @@
 # Mandarin Blueprint Prop Customizer
 
+[![Chrome Web Store Version](https://img.shields.io/chrome-web-store/v/canpihhofonencamgdapaeedbmailndn)](https://chromewebstore.google.com/detail/canpihhofonencamgdapaeedbmailndn?utm_source=item-share-cb)
+
 Create, save, and manage your own Mandarin Blueprint props directly in your browser! Synchronizes with Traverse!
 
 ## Overview
