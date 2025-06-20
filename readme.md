@@ -15,7 +15,7 @@ This Chrome extension enhances your experience on [Mandarin Blueprint](https://c
 ## Installation
 
 ### From Chrome Web Store (Recommended)
-Install the latest stable version directly from the [Chrome Web Store](https://chrome.google.com/webstore/category/extensions) (search for "Mandarin Blueprint Prop Customizer").
+Install the latest stable version directly from the [Chrome Web Store](https://chromewebstore.google.com/detail/canpihhofonencamgdapaeedbmailndn?utm_source=item-share-cb).
 
 ### From Source (Development)
 1. Clone or download this repository.
