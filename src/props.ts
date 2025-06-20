@@ -1,9 +1,9 @@
-import { addUiToH1PickAProp, addUiToPropsLines } from './props-mb';
+import { addUiToH1PickAProp, addUiToPropsLines } from "./props-mb";
 import { isMb, isTraverse } from "./check-domain";
 import { suppressUpdates } from "./mutation-observer";
-import { addUiToH2PickAProp } from './props-traverse';
+import { addUiToH2PickAProp, addUiToMovieReviewProps } from "./props-traverse";
 
-export function getProps() {
+export async function getProps() {
   suppressUpdates(true);
   if (isMb()) {
     addUiToPropsLines();
@@ -12,6 +12,7 @@ export function getProps() {
 
   if (isTraverse()) {
     addUiToH2PickAProp();
+    addUiToMovieReviewProps();
   }
 
   suppressUpdates(false);

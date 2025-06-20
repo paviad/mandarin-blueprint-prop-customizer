@@ -4,18 +4,46 @@ import { getProp, updateProp } from "./database";
 let isTraversePickAPropPage = false;
 let traversePickAPropCharacter = "";
 let traversePickAPropText = "";
+let traversePickAPropH2: HTMLHeadingElement | null = null;
+
+export async function addUiToMovieReviewProps() {
+  const spans = Array.from(document.querySelectorAll("span"));
+
+  const propSpans = spans
+    .map((span) => {
+      const a = span.querySelector("a");
+      if (!a || a.parentElement !== span) return [null, false, ""] as const;
+      const textContent = a.textContent?.trim() || "";
+
+      const match = textContent.match(
+        /^([\u2e80-\u2eff\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}]).*?PROP/u
+      );
+
+      const r = [span, !!match, match?.[1] || ""] as const;
+      return r;
+    })
+    .filter(([, isMatch]) => isMatch);
+
+  for (const [span, _, chineseChar] of propSpans) {
+    addMappingUi(chineseChar, span!);
+  }
+}
 
 export async function addUiToH2PickAProp() {
   const h2s = Array.from(document.querySelectorAll("h2"));
   isTraversePickAPropPage = false;
   for (const h2 of h2s) {
+    traversePickAPropH2 = h2 as HTMLHeadingElement;
+
     const text = h2.textContent?.trim() || "";
     if (
       text.startsWith("Pick a prop for ") &&
-      /[\u2e80–\u2eff\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}]$/u.test(text)
+      /[\u2e80-\u2eff\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}]/u.test(
+        text
+      )
     ) {
       const lastChineseChar = text.match(
-        /(?<=for )\s*([\u2e80–\u2eff\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}])/u
+        /(?<=for )\s*([\u2e80-\u2eff\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}])/u
       )?.[1];
       if (lastChineseChar) {
         isTraversePickAPropPage = true;
@@ -30,6 +58,7 @@ export async function addUiToH2PickAProp() {
   }
   return null;
 }
+
 export async function recordPickAPropText() {
   const fieldDiv = Array.from(document.querySelectorAll("div.field-name")).find(
     (div) => div.textContent?.trim() === "PROP"
@@ -46,7 +75,7 @@ export async function recordPickAPropText() {
       }
       if (traversePickAPropText === editableDiv.innerText) return;
       if (traversePickAPropText) {
-        await updateProp(traversePickAPropCharacter, traversePickAPropText);
+        await updateProp(traversePickAPropCharacter, editableDiv.innerText);
       }
       traversePickAPropText = editableDiv.innerText;
     }

@@ -45,6 +45,8 @@ async function saveDatabase(db: Database): Promise<void> {
 export async function updateProp(char: string, value: string) {
   if (!char) return;
 
+  console.log(`MBC Extension: Updating prop for character '${char}' to '${value}'`);
+
   const db = await loadDatabase();
   if (value) {
     if (db.propMap[char] === value) return; // No change

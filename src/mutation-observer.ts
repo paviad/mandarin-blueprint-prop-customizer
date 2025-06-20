@@ -1,6 +1,38 @@
-import { Subject, debounceTime } from "rxjs";
+import {
+  Subject,
+  debounceTime,
+  delay,
+  distinctUntilChanged,
+  of,
+  switchMap,
+} from "rxjs";
+
+const DELAY = 200;
 
 const domUpdateSubject = new Subject<void>();
+
+export const domUpdate = domUpdateSubject.pipe(debounceTime(DELAY));
+
+const suppressUpdatesSubject = new Subject<boolean>();
+const suppressUpdates$ = suppressUpdatesSubject.pipe(
+  distinctUntilChanged(),
+  switchMap((suppress) => {
+    if (suppress) {
+      return of(true);
+    } else {
+      return of(false).pipe(delay(DELAY));
+    }
+  })
+);
+
+suppressUpdates$.subscribe((suppress) => {
+  if (suppress) {
+    stopMutationObserver();
+  } else {
+    startMutationObserver();
+  }
+});
+
 const observer = new MutationObserver((mutationsList, observer) => {
   for (const mutation of mutationsList) {
     if (mutation.type === "childList" || mutation.type === "attributes") {
@@ -10,16 +42,8 @@ const observer = new MutationObserver((mutationsList, observer) => {
   }
 });
 
-const DELAY = 200;
-
-export const domUpdate = domUpdateSubject.pipe(debounceTime(DELAY));
-
 export function suppressUpdates(suppress: boolean) {
-  if (suppress) {
-    stopMutationObserver();
-  } else {
-    setTimeout(() => startMutationObserver(), DELAY);
-  }
+  suppressUpdatesSubject.next(suppress);
 }
 
 export function stopMutationObserver() {
