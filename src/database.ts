@@ -17,37 +17,50 @@ async function saveToStorage(key: string, value: string): Promise<void> {
   await chrome.storage.sync.set({ [key]: value });
 }
 
-async function loadDatabase(): Promise<Database> {
-  const data = await getFromStorage(DATABASE_KEY);
-  let db: Partial<Database> = {};
-  if (data) {
-    try {
-      db = JSON.parse(data);
-    } catch {
-      // ignore parse error, will use empty objects
+async function loadDatabase(): Promise<Database | null> {
+  try {
+    const data = await getFromStorage(DATABASE_KEY);
+    let db: Partial<Database> = {};
+    if (data) {
+      try {
+        db = JSON.parse(data);
+      } catch {
+        // ignore parse error, will use empty objects
+      }
     }
+    const rc = {
+      propMap: db.propMap ?? {},
+      setMap: db.setMap ?? {},
+      actorMap: db.actorMap ?? {},
+    };
+
+    database = rc;
+
+    return database;
+  } catch (error) {
+    return null;
   }
-  const rc = {
-    propMap: db.propMap ?? {},
-    setMap: db.setMap ?? {},
-    actorMap: db.actorMap ?? {},
-  };
-
-  database = rc;
-
-  return database;
 }
 
 async function saveDatabase(db: Database): Promise<void> {
-  saveToStorage(DATABASE_KEY, JSON.stringify(db));
+  try {
+    saveToStorage(DATABASE_KEY, JSON.stringify(db));
+  } catch (error) {}
 }
 
 export async function updateProp(char: string, value: string) {
   if (!char) return;
 
-  console.log(`MBC Extension: Updating prop for character '${char}' to '${value}'`);
+  console.log(
+    `MBC Extension: Updating prop for character '${char}' to '${value}'`
+  );
 
   const db = await loadDatabase();
+  if (!db) {
+    console.error("MBC Extension: Failed to load database.");
+    return;
+  }
+
   if (value) {
     if (db.propMap[char] === value) return; // No change
     db.propMap[char] = value;
@@ -63,5 +76,24 @@ export async function getProp(char: string): Promise<string> {
   if (!char) return "";
 
   const db = await loadDatabase();
+  if (!db) {
+    console.error("MBC Extension: Failed to load database.");
+    return "";
+  }
+
   return db.propMap[char] ?? "";
+}
+
+export async function exportDatabase(): Promise<Database | null> {
+  const db = await loadDatabase();
+  if (!db) {
+    console.error("MBC Extension: Failed to load database.");
+    return null;
+  }
+
+  return {
+    propMap: { ...db.propMap },
+    setMap: { ...db.setMap },
+    actorMap: { ...db.actorMap },
+  };
 }

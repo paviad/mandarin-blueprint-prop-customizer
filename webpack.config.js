@@ -5,6 +5,8 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 module.exports = {
   entry: {
     main: "./src/index.ts",
+    svc: "./src/service-worker.ts",
+    popup: "./src/popup.ts",
   },
   mode: "production",
   optimization: {
