@@ -9,10 +9,9 @@ This Chrome extension enhances your experience on [Mandarin Blueprint](https://c
 
 ## Features
 - 📝 **Create and edit custom props** for Mandarin Blueprint characters
-- 💾 **Save your props** locally using browser storage
-- 📋 **Manage and update** your prop list anytime
 - ⚡ **Seamless integration** with the Mandarin Blueprint course website
 - 🔄 **Automatic synchronization**: Whenever you enter a prop mapping on Mandarin Blueprint or Traverse.link, the extension saves it on both sites, keeping your props in sync across platforms.
+- 👁️ **View all mappings**: Click the extension icon to instantly see a list of all your saved prop mappings in a popup window.
 
 ## Installation
 
