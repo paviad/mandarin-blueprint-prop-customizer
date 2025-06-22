@@ -1,3 +1,5 @@
+import { PropUpdateMessage } from "./prop-update-message";
+
 const DATABASE_KEY = "myDatabase";
 
 let database: Database;
@@ -69,6 +71,8 @@ export async function updateProp(char: string, value: string) {
     delete db.propMap[char];
   }
 
+  sendMessageToExtension(char, value);
+
   saveDatabase(db);
 }
 
@@ -96,4 +100,12 @@ export async function exportDatabase(): Promise<Database | null> {
     setMap: { ...db.setMap },
     actorMap: { ...db.actorMap },
   };
+}
+async function sendMessageToExtension(char: string, value: string) {
+  // Send a message to the extension to update the UI or perform other actions
+  await chrome.runtime.sendMessage({
+    type: "propUpdate",
+    char,
+    value,
+  } satisfies PropUpdateMessage);
 }

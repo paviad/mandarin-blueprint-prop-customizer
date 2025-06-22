@@ -1,11 +1,15 @@
 {
   "manifest_version": 3,
   "name": "Mandarin Blueprint Prop Customizer",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Create, save, and manage your own Mandarin Blueprint + Traverse props.",
   "permissions": [
-    "storage"
+    "storage",
+    "tabs"
   ],
+  "background": {
+    "service_worker": "svc.bundle.js"
+  },
   "action": {
     "default_title": "(Click to show all mappings)",
     "default_popup": "popup.html"

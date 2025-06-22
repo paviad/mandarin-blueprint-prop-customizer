@@ -1,18 +1,21 @@
-import { getProp, updateProp } from './database';
-import { suppressUpdates } from './mutation-observer';
+import { getProp, updateProp } from "./database";
+import { suppressUpdates } from "./mutation-observer";
 
 export async function addMappingUi(char: string, p: HTMLElement) {
   const mapped = await getProp(char);
 
   // Remove any existing mapping block
   const existing = p.querySelector(".prop-map-block");
-  if (existing) existing.remove();
+  if (existing) return;
 
   const block = document.createElement("span");
   block.className = "prop-map-block";
   block.style.marginLeft = "1em";
 
   const text = document.createElement("span");
+
+  text.setAttribute("mbc-data-hanzi", char);
+
   if (mapped) {
     text.textContent = `Mapped: ${mapped}`;
   } else {
@@ -24,11 +27,12 @@ export async function addMappingUi(char: string, p: HTMLElement) {
   editBtn.style.marginLeft = "0.5em";
 
   editBtn.onclick = async () => {
+    const mapped = await getProp(char);
     const newVal = prompt(`Edit mapping for "${char}"`, mapped);
     if (newVal) {
       await updateProp(char, newVal);
       text.textContent = `Mapped: ${newVal}`;
-    } else {
+    } else if (newVal !== null) {
       await updateProp(char, "");
       text.textContent = `(Not Mapped)`;
     }
@@ -39,4 +43,17 @@ export async function addMappingUi(char: string, p: HTMLElement) {
   block.appendChild(editBtn);
   p.appendChild(block);
   suppressUpdates(false);
+}
+
+export function replaceMappingInUi(char: string, newVal: string) {
+  const elements = document.querySelectorAll(`[mbc-data-hanzi="${char}"]`);
+  elements.forEach((text) => {
+    if (text) {
+      if (newVal) {
+        text.textContent = `Mapped: ${newVal}`;
+      } else {
+        text.textContent = `(Not Mapped)`;
+      }
+    }
+  });
 }

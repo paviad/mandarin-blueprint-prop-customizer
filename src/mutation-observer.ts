@@ -6,10 +6,11 @@ import {
   of,
   switchMap,
 } from "rxjs";
+import { MutationInfo } from "./mutation-info";
 
 const DELAY = 200;
 
-const domUpdateSubject = new Subject<void>();
+const domUpdateSubject = new Subject<MutationInfo>();
 
 export const domUpdate = domUpdateSubject.pipe(debounceTime(DELAY));
 
@@ -35,10 +36,12 @@ suppressUpdates$.subscribe((suppress) => {
 
 const observer = new MutationObserver((mutationsList, observer) => {
   for (const mutation of mutationsList) {
-    if (mutation.type === "childList" || mutation.type === "attributes") {
-      // Code to execute when DOM changes are detected
-      domUpdateSubject.next();
-    }
+    // Code to execute when DOM changes are detected
+    const savedSpan = Array.from(document.querySelectorAll("span")).find(
+      (el) => el.textContent?.trim().toLowerCase() === "saved"
+    );
+    const hasSavedSpan = !!savedSpan;
+    domUpdateSubject.next({ propSaved: hasSavedSpan });
   }
 });
 
