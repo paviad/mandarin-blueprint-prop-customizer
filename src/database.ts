@@ -57,7 +57,7 @@ export async function updateProp(char: string, value: string) {
 
   const db = await loadDatabase();
   if (!db) {
-    console.error("MBC Extension: Failed to load database.");
+    console.log("MBC Extension: Failed to load database.");
     return;
   }
 
@@ -77,7 +77,7 @@ export async function getProp(char: string): Promise<string> {
 
   const db = await loadDatabase();
   if (!db) {
-    console.error("MBC Extension: Failed to load database.");
+    console.log("MBC Extension: Failed to load database.");
     return "";
   }
 
@@ -87,7 +87,7 @@ export async function getProp(char: string): Promise<string> {
 export async function exportDatabase(): Promise<Database | null> {
   const db = await loadDatabase();
   if (!db) {
-    console.error("MBC Extension: Failed to load database.");
+    console.log("MBC Extension: Failed to load database.");
     return null;
   }
 
