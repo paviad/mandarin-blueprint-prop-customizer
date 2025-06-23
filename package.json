@@ -10,14 +10,18 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack": "webpack",
     "start": "ts-node index.ts",
-    "pack": "npm run webpack && node util/create-store-package.js"
+    "pack": "npm run webpack && node util/create-store-package.js",
+    "lint": "eslint src"
   },
   "devDependencies": {
+    "@eslint/js": "^9.29.0",
     "chrome-types": "^0.1.354",
     "copy-webpack-plugin": "^13.0.0",
+    "eslint": "^9.29.0",
     "jszip": "^3.10.1",
     "ts-loader": "^9.5.2",
     "typescript": "^5.8.3",
+    "typescript-eslint": "^8.34.1",
     "webpack": "^5.99.9",
     "webpack-cli": "^6.0.1"
   },

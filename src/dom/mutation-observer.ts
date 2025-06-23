@@ -9,7 +9,6 @@ import {
 import { MutationInfo } from "../model/mutation-info";
 
 const DELAY = 200;
-
 const domUpdateSubject = new Subject<MutationInfo>();
 
 export const domUpdate = domUpdateSubject.pipe(debounceTime(DELAY));

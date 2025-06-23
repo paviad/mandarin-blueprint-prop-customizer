@@ -13,7 +13,7 @@ export function initializeServiceWorkerCommunication() {
   chrome.runtime.onMessage.addListener(function (
     request: PropUpdateMessage,
     sender: chrome.runtime.MessageSender,
-    sendResponse: any
+    sendResponse
   ) {
     const url = chrome.runtime.getManifest().content_scripts[0].matches;
 
@@ -34,7 +34,7 @@ export function initializeContentScriptCommunication(
   chrome.runtime.onMessage.addListener(function (
     request: PropUpdateMessage,
     sender,
-    sendResponse: any
+    sendResponse
   ) {
     callback(request);
 

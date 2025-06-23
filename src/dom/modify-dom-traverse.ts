@@ -12,20 +12,22 @@ export async function addUiToMovieReviewProps() {
   const propSpans = spans
     .map((span) => {
       const a = span.querySelector("a");
-      if (!a || a.parentElement !== span) return [null, false, ""] as const;
+      if (!a || a.parentElement !== span) return [null, ""] as const;
       const textContent = a.textContent?.trim() || "";
 
       const match = textContent.match(
         /^([\u2e80-\u2eff\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}]).*?PROP/u
       );
 
-      const r = [span, !!match, match?.[1] || ""] as const;
+      if (!match) return [null, ""] as const;
+
+      const r = [span, match?.[1] || ""] as const;
       return r;
     })
-    .filter(([, isMatch]) => isMatch);
+    .filter(([span]) => Boolean(span)) as [HTMLSpanElement, string][];
 
-  for (const [span, _, chineseChar] of propSpans) {
-    addMappingUi(chineseChar, span!);
+  for (const [span, chineseChar] of propSpans) {
+    addMappingUi(chineseChar, span);
   }
 }
 

@@ -1,6 +1,6 @@
 import { sendMessageToServiceWorker } from "../chrome/messages";
 import { getFromStorage, saveToStorage } from "../chrome/storage";
-import { Database } from '../model/database';
+import { Database } from "../model/database";
 
 const DATABASE_KEY = "myDatabase";
 
@@ -35,7 +35,9 @@ async function loadDatabase(): Promise<Database | null> {
 async function saveDatabase(db: Database): Promise<void> {
   try {
     saveToStorage(DATABASE_KEY, JSON.stringify(db));
-  } catch (error) {}
+  } catch (error) {
+    console.log("MBC Extension: Failed to save database.", error);
+  }
 }
 
 export async function updateProp(char: string, value: string) {
@@ -56,6 +58,7 @@ export async function updateProp(char: string, value: string) {
     db.propMap[char] = value;
   } else {
     if (!db.propMap[char]) return; // No change
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete db.propMap[char];
   }
 
