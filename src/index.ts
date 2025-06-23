@@ -1,22 +1,16 @@
-import { replaceMappingInUi } from "./add-mapping-ui";
-import { domUpdate, startMutationObserver } from "./mutation-observer";
-import { PropUpdateMessage } from "./prop-update-message";
-import { getProps } from "./props";
+import { domUpdate, startMutationObserver } from "./dom/mutation-observer";
+import { modifyDom } from "./dom/modify-dom";
+import { initializeContentScriptCommunication } from "./chrome/messages";
+import { replaceMappingInUi } from './dom/replace-mapping-in-ui';
 
 window.addEventListener("load", async () => {
   domUpdate.subscribe((info) => {
-    getProps(info);
+    modifyDom(info);
   });
 
   startMutationObserver();
 });
 
-chrome.runtime.onMessage.addListener(function (
-  request: PropUpdateMessage,
-  sender,
-  sendResponse: any
-) {
-  replaceMappingInUi(request.char, request.value);
-
-  return false;
-});
+initializeContentScriptCommunication((request) =>
+  replaceMappingInUi(request.char, request.value)
+);

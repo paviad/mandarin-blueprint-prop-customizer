@@ -1,4 +1,4 @@
-import { getProp, updateProp } from "./database";
+import { getProp, updateProp } from "../util/database-operations";
 import { suppressUpdates } from "./mutation-observer";
 
 export async function addMappingUi(char: string, p: HTMLElement) {
@@ -43,17 +43,4 @@ export async function addMappingUi(char: string, p: HTMLElement) {
   block.appendChild(editBtn);
   p.appendChild(block);
   suppressUpdates(false);
-}
-
-export function replaceMappingInUi(char: string, newVal: string) {
-  const elements = document.querySelectorAll(`[mbc-data-hanzi="${char}"]`);
-  elements.forEach((text) => {
-    if (text) {
-      if (newVal) {
-        text.textContent = `Mapped: ${newVal}`;
-      } else {
-        text.textContent = `(Not Mapped)`;
-      }
-    }
-  });
 }

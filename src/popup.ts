@@ -1,4 +1,4 @@
-import { exportDatabase } from "./database";
+import { exportDatabase } from "./util/database-operations";
 
 document.addEventListener("DOMContentLoaded", () => {
   exportDatabase().then((db) => {

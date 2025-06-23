@@ -13,7 +13,28 @@ export function addUiToPropsLines() {
   }
 }
 
-export async function getPropLines(h6: HTMLHeadingElement) {
+export async function addUiToH1PickAProp() {
+  const h1s = Array.from(document.querySelectorAll("h1"));
+  for (const h1 of h1s) {
+    const text = h1.textContent?.trim() || "";
+    if (
+      text.startsWith("Pick a Prop ") &&
+      /[\u2e80-\u2eff\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}]$/u.test(
+        text
+      )
+    ) {
+      const lastChineseChar = text.match(
+        /(?<= Prop )\s*([\u2e80-\u2eff\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}])/u
+      )?.[1]!;
+      isMbPickAPropPage = true;
+      mbPickAPropCharacter = lastChineseChar;
+      addMappingUi(lastChineseChar!, h1);
+    }
+  }
+  return null;
+}
+
+async function getPropLines(h6: HTMLHeadingElement) {
   const result: string[] = [];
   let el = h6.nextElementSibling;
   const paragraphs: HTMLParagraphElement[] = [];
@@ -26,7 +47,9 @@ export async function getPropLines(h6: HTMLHeadingElement) {
   }
 
   const firstChineseChars = result.map((text) => {
-    const match = text.match(/[\u2e80-\u2eff\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}]/u);
+    const match = text.match(
+      /[\u2e80-\u2eff\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}]/u
+    );
     return match ? match[0] : "";
   });
 
@@ -36,22 +59,4 @@ export async function getPropLines(h6: HTMLHeadingElement) {
 
     addMappingUi(char, p);
   });
-}
-export async function addUiToH1PickAProp() {
-  const h1s = Array.from(document.querySelectorAll("h1"));
-  for (const h1 of h1s) {
-    const text = h1.textContent?.trim() || "";
-    if (
-      text.startsWith("Pick a Prop ") &&
-      /[\u2e80-\u2eff\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}]$/u.test(text)
-    ) {
-      const lastChineseChar = text.match(
-        /(?<= Prop )\s*([\u2e80-\u2eff\u31c0-\u31ef\u3400-\u4db5\u4e00-\u9fff\u{20000}-\u{2a6d6}])/u
-      )?.[1]!;
-      isMbPickAPropPage = true;
-      mbPickAPropCharacter = lastChineseChar;
-      addMappingUi(lastChineseChar!, h1);
-    }
-  }
-  return null;
 }

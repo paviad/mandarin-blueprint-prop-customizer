@@ -1,5 +1,5 @@
 import { addMappingUi } from "./add-mapping-ui";
-import { getProp, updateProp } from "./database";
+import { getProp, updateProp } from "../util/database-operations";
 
 let isTraversePickAPropPage = false;
 let traversePickAPropCharacter = "";
@@ -59,7 +59,7 @@ export async function addUiToH2PickAProp() {
   return null;
 }
 
-export async function recordPickAPropText() {
+async function recordPickAPropText() {
   const fieldDiv = Array.from(document.querySelectorAll("div.field-name")).find(
     (div) => div.textContent?.trim() === "PROP"
   );

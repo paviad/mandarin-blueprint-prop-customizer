@@ -1,23 +1,10 @@
-import { PropUpdateMessage } from "./prop-update-message";
+import { sendMessageToServiceWorker } from "../chrome/messages";
+import { getFromStorage, saveToStorage } from "../chrome/storage";
+import { Database } from '../model/database';
 
 const DATABASE_KEY = "myDatabase";
 
 let database: Database;
-
-export interface Database {
-  propMap: Record<string, string>;
-  setMap: Record<string, string>;
-  actorMap: Record<string, string>;
-}
-
-async function getFromStorage(key: string): Promise<string | null> {
-  const result = await chrome.storage.sync.get(key);
-  return result[key] as string | null;
-}
-
-async function saveToStorage(key: string, value: string): Promise<void> {
-  await chrome.storage.sync.set({ [key]: value });
-}
 
 async function loadDatabase(): Promise<Database | null> {
   try {
@@ -40,6 +27,7 @@ async function loadDatabase(): Promise<Database | null> {
 
     return database;
   } catch (error) {
+    console.log("MBC Extension: Failed to load database.");
     return null;
   }
 }
@@ -71,7 +59,7 @@ export async function updateProp(char: string, value: string) {
     delete db.propMap[char];
   }
 
-  sendMessageToExtension(char, value);
+  sendMessageToServiceWorker(char, value);
 
   saveDatabase(db);
 }
@@ -81,7 +69,6 @@ export async function getProp(char: string): Promise<string> {
 
   const db = await loadDatabase();
   if (!db) {
-    console.log("MBC Extension: Failed to load database.");
     return "";
   }
 
@@ -91,7 +78,6 @@ export async function getProp(char: string): Promise<string> {
 export async function exportDatabase(): Promise<Database | null> {
   const db = await loadDatabase();
   if (!db) {
-    console.log("MBC Extension: Failed to load database.");
     return null;
   }
 
@@ -100,12 +86,4 @@ export async function exportDatabase(): Promise<Database | null> {
     setMap: { ...db.setMap },
     actorMap: { ...db.actorMap },
   };
-}
-async function sendMessageToExtension(char: string, value: string) {
-  // Send a message to the extension to update the UI or perform other actions
-  await chrome.runtime.sendMessage({
-    type: "propUpdate",
-    char,
-    value,
-  } satisfies PropUpdateMessage);
 }

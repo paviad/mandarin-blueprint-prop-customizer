@@ -6,7 +6,7 @@ import {
   of,
   switchMap,
 } from "rxjs";
-import { MutationInfo } from "./mutation-info";
+import { MutationInfo } from "../model/mutation-info";
 
 const DELAY = 200;
 
