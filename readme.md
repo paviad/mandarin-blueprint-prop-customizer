@@ -18,6 +18,13 @@ This Chrome extension enhances your experience on [Mandarin Blueprint](https://c
 ### From Chrome Web Store (Recommended)
 Install the latest stable version directly from the [Chrome Web Store](https://chromewebstore.google.com/detail/canpihhofonencamgdapaeedbmailndn?utm_source=item-share-cb).
 
+### From Release
+1. Download the latest release ZIP from the [Releases page](https://github.com/aviadp/mbcust/releases).
+2. Unzip the downloaded file `mandarin-blueprint-prop-customizer.zip` to a folder on your computer.
+3. Go to `chrome://extensions/` in your browser.
+4. Enable "Developer mode" (top right).
+5. Click "Load unpacked" and select the folder where you extracted the ZIP.
+
 ### From Source (Development)
 1. Clone or download this repository.
 2. Run `npm install` to install dependencies.
@@ -35,7 +42,7 @@ Install the latest stable version directly from the [Chrome Web Store](https://c
 
 ## Development
 - Source code is in the `src/` directory (written in TypeScript).
-- Build output is bundled to `assets/main.bundle.js` via Webpack.
+- Build output is bundled to the `dist` subdirectory via Webpack.
 
 ## Contributing
 Pull requests and suggestions are welcome! Please open an issue to discuss your ideas or report bugs.
