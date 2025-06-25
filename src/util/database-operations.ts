@@ -34,7 +34,7 @@ async function loadDatabase(): Promise<Database | null> {
 
 async function saveDatabase(db: Database): Promise<void> {
   try {
-    saveToStorage(DATABASE_KEY, JSON.stringify(db));
+    await saveToStorage(DATABASE_KEY, JSON.stringify(db));
   } catch (error) {
     console.log("MBC Extension: Failed to save database.", error);
   }
@@ -64,7 +64,7 @@ export async function updateProp(char: string, value: string) {
 
   sendMessageToServiceWorker(char, value);
 
-  saveDatabase(db);
+  await saveDatabase(db);
 }
 
 export async function getProp(char: string): Promise<string> {

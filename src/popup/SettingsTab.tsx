@@ -1,11 +1,32 @@
 import * as React from "react";
 import { TabPanelProps } from "./TabPanelProps";
 import Switch from "@mui/material/Switch";
+import { loadSettings, setHideDefault } from "../util/settings-operations";
 
 function Settings() {
+  const [hideDefaultUi, setHideDefaultUi] = React.useState(false);
+  React.useEffect(() => {
+    async function loadSettingsEffect() {
+      const settings = await loadSettings();
+      if (settings) {
+        setHideDefaultUi(settings.hideDefault || false);
+      }
+    }
+    loadSettingsEffect();
+  });
+
+  async function setHideDefaultAndSave(hide: boolean) {
+    setHideDefaultUi(hide);
+    await setHideDefault(hide);
+  }
+
   return (
     <div>
-      <Switch /> Hide Default
+      <Switch
+        checked={hideDefaultUi}
+        onChange={(f) => setHideDefaultAndSave(f.target.checked)}
+      />
+      {"Hide Default"}
     </div>
   );
 }
