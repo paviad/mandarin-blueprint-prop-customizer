@@ -11,6 +11,17 @@ module.exports = {
   mode: "production",
   optimization: {
     usedExports: true,
+    splitChunks: {
+      chunks: "all",
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendors",
+          chunks: "all",
+          enforce: true,
+        },
+      },
+    },
   },
   module: {
     rules: [

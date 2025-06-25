@@ -21,7 +21,8 @@
         "https://traverse.link/*"
       ],
       "js": [
-        "main.bundle.js"
+        "main.bundle.js",
+        "vendors.bundle.js"
       ],
       "run_at": "document_idle"
     }
