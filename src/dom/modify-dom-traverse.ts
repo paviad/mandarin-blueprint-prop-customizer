@@ -58,6 +58,10 @@ export async function addUiToH2PickAProp() {
       }
     }
   }
+
+  if (!isTraversePickAPropPage) {
+    traversePickAPropText = "";
+  }
   return null;
 }
 
@@ -78,8 +82,32 @@ async function recordPickAPropText() {
       if (traversePickAPropText === editableDiv.innerText) return;
       if (traversePickAPropText) {
         await updateProp(traversePickAPropCharacter, editableDiv.innerText);
+      } else {
+        const p = editableDiv.querySelector("p");
+        if (p && p.textContent !== mapped) {
+          p.textContent = mapped;
+        }
       }
       traversePickAPropText = editableDiv.innerText;
+    }
+  }
+}
+
+export function updateTraverseIfInPickAPropPage(char: string, mapped: string) {
+  if (isTraversePickAPropPage && traversePickAPropCharacter === char) {
+    const fieldDiv = Array.from(
+      document.querySelectorAll("div.field-name")
+    ).find((div) => div.textContent?.trim() === "PROP");
+    if (fieldDiv && fieldDiv.parentElement) {
+      const editableDiv = fieldDiv.parentElement.querySelector(
+        'div[contenteditable="true"]'
+      ) as HTMLDivElement;
+      if (editableDiv) {
+        const p = editableDiv.querySelector("p");
+        if (p && p.textContent !== mapped) {
+          p.textContent = mapped;
+        }
+      }
     }
   }
 }
