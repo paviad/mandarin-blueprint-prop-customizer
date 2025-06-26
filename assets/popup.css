@@ -11,3 +11,10 @@ div[role="tabpanel"] {
   right: 7px;
   bottom: 7px;
 }
+
+.settings-description {
+  font-size: 0.9em;
+  color: #444;
+  margin: 22px;
+  margin-top: -14px;
+}

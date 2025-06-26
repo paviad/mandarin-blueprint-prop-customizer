@@ -27,6 +27,12 @@ function Settings() {
         onChange={(f) => setHideDefaultAndSave(f.target.checked)}
       />
       {"Hide Default"}
+      <div className="settings-description">
+        <p>
+          Toggling this on will hide the default MB prop mapping on the Mandarin
+          Blueprint site in the "Make a Movie" pages.
+        </p>
+      </div>
     </div>
   );
 }
