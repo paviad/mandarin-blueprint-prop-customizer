@@ -1,4 +1,4 @@
-import { sendMessageToServiceWorker } from "../chrome/messages";
+import { sendPropUpdateMessageToServiceWorker } from "../chrome/messages";
 import { getFromStorage, saveToStorage } from "../chrome/storage";
 import { Database } from "../model/database";
 
@@ -62,7 +62,7 @@ export async function updateProp(char: string, value: string) {
     delete db.propMap[char];
   }
 
-  sendMessageToServiceWorker(char, value);
+  sendPropUpdateMessageToServiceWorker(char, value);
 
   await saveDatabase(db);
 }

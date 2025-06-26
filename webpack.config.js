@@ -23,6 +23,12 @@ module.exports = {
       },
     },
   },
+  performance: {
+    hints: false,
+  },
+  stats: {
+    orphanModules: true,
+  },
   module: {
     rules: [
       {

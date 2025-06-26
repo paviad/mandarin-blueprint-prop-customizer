@@ -1,19 +1,19 @@
-import { addUiToH1PickAProp, addUiToPropsLines } from "./modify-dom-mb";
+import { addUiToH1PickAProp, addUiToPropsLines } from "./mb";
 import { isMb, isTraverse } from "../util/check-domain";
-import {
-  addUiToH2PickAProp,
-  addUiToMovieReviewProps,
-} from "./modify-dom-traverse";
 import { MutationInfo } from "../model/mutation-info";
+import { loadSettings } from "../util/settings-operations";
+import { addUiToH2PickAProp, addUiToMovieReviewProps } from "./traverse";
 
 export async function modifyDom(info: MutationInfo) {
   if (isMb()) {
-    addUiToPropsLines();
-    addUiToH1PickAProp();
+    const settings = await loadSettings();
+    const hideDefault = settings?.hideDefault || false;
+    await addUiToPropsLines(hideDefault);
+    await addUiToH1PickAProp();
   }
 
   if (isTraverse()) {
-    addUiToH2PickAProp();
-    addUiToMovieReviewProps();
+    await addUiToH2PickAProp();
+    await addUiToMovieReviewProps();
   }
 }

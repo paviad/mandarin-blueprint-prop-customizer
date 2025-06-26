@@ -1,6 +1,10 @@
 import { PropUpdateMessage } from "../model/prop-update-message";
+import { SettingsUpdateMessage } from "../model/settings-update-message";
 
-export async function sendMessageToServiceWorker(char: string, value: string) {
+export async function sendPropUpdateMessageToServiceWorker(
+  char: string,
+  value: string
+) {
   // Send a message to the extension to update the UI or perform other actions
   await chrome.runtime.sendMessage({
     type: "propUpdate",
@@ -9,9 +13,18 @@ export async function sendMessageToServiceWorker(char: string, value: string) {
   } satisfies PropUpdateMessage);
 }
 
+export async function sendSettingsUpdateMessageToServiceWorker() {
+  // Send a message to the extension to update the UI or perform other actions
+  await chrome.runtime.sendMessage({
+    type: "settingsUpdate",
+  } satisfies SettingsUpdateMessage);
+}
+
+export type UpdateMessage = PropUpdateMessage | SettingsUpdateMessage;
+
 export function initializeServiceWorkerCommunication() {
   chrome.runtime.onMessage.addListener(function (
-    request: PropUpdateMessage,
+    request: UpdateMessage,
     sender: chrome.runtime.MessageSender,
     sendResponse
   ) {
@@ -29,10 +42,10 @@ export function initializeServiceWorkerCommunication() {
 }
 
 export function initializeContentScriptCommunication(
-  callback: (request: PropUpdateMessage) => void
+  callback: (request: UpdateMessage) => void
 ) {
   chrome.runtime.onMessage.addListener(function (
-    request: PropUpdateMessage,
+    request: UpdateMessage,
     sender,
     sendResponse
   ) {

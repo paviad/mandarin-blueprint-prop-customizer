@@ -1,5 +1,7 @@
+import { Subject } from "rxjs";
 import { getFromStorage, saveToStorage } from "../chrome/storage";
 import { Settings } from "../model/settings";
+import { sendSettingsUpdateMessageToServiceWorker } from '../chrome/messages';
 
 const SETTINGS_KEY = "mySettings";
 
@@ -33,27 +35,44 @@ async function saveSettings(db: Settings): Promise<void> {
 }
 
 async function updateSettings(newSettings: Settings) {
-  const db = await loadSettings();
-  if (!db) {
+  const oldSettings = await loadSettings();
+  if (!oldSettings) {
     console.log("MBC Extension: Failed to load settings.");
     return;
   }
 
-  await saveSettings({
-    ...db,
+  settings = {
+    ...oldSettings,
     ...newSettings,
-  });
+  };
+
+  await saveSettings(settings);
 }
 
 export async function exportSettings(): Promise<Settings | null> {
-  const db = await loadSettings();
-  if (!db) {
+  const oldSettings = await loadSettings();
+  if (!oldSettings) {
     return null;
   }
 
-  return {};
+  return { ...oldSettings };
 }
+
+const settingsSubject = new Subject<Settings>();
+export const settings$ = settingsSubject.asObservable();
 
 export async function setHideDefault(hide: boolean) {
   await updateSettings({ hideDefault: hide } satisfies Partial<Settings>);
+  settingsSubject.next(settings);
+  await sendSettingsUpdateMessageToServiceWorker();
+}
+
+export async function disseminateSettings() {
+  const currentSettings = await loadSettings();
+  if (currentSettings) {
+    settings = currentSettings;
+    settingsSubject.next(settings);
+  } else {
+    console.log("MBC Extension: Failed to disseminate settings.");
+  }
 }

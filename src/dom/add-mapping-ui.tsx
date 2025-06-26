@@ -7,7 +7,7 @@ export async function addMappingUi(char: string, p: HTMLElement) {
   const mapped = await getProp(char);
 
   const existing = p.querySelector(".prop-map-block");
-  if (existing) return;
+  if (existing) return false;
 
   const block = document.createElement("span");
   block.className = "prop-map-block";
@@ -16,4 +16,6 @@ export async function addMappingUi(char: string, p: HTMLElement) {
 
   const root = createRoot(block);
   root.render(<Prop char={char} mapped={mapped} />);
+
+  return true;
 }

@@ -6,6 +6,9 @@ import {
 } from "./dom";
 import { initializeContentScriptCommunication } from "./chrome/messages";
 import { replaceMappingInUi } from "./dom/Prop";
+import { disseminateSettings, settings$ } from "./util/settings-operations";
+import { distinctUntilChanged, map } from "rxjs";
+import { updateDefaultMappingVisibility } from './dom/mb/update-default-mapping-visibility';
 
 window.addEventListener("load", async () => {
   domUpdate.subscribe((info) => {
@@ -13,9 +16,25 @@ window.addEventListener("load", async () => {
   });
 
   startMutationObserver();
+
+  settings$
+    .pipe(
+      map((settings) => !!settings.hideDefault),
+      distinctUntilChanged()
+    )
+    .subscribe((hideDefault) => updateDefaultMappingVisibility(!!hideDefault));
 });
 
 initializeContentScriptCommunication((request) => {
-  replaceMappingInUi(request.char, request.value);
-  updateTraverseIfInPickAPropPage(request.char, request.value);
+  switch (request.type) {
+    case "settingsUpdate":
+      disseminateSettings();
+      break;
+    case "propUpdate":
+      replaceMappingInUi(request.char, request.value);
+      updateTraverseIfInPickAPropPage(request.char, request.value);
+      break;
+    default:
+      request satisfies never; // Ensure all cases are handled
+  }
 });
