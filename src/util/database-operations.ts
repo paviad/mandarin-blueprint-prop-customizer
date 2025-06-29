@@ -90,3 +90,62 @@ export async function exportDatabase(): Promise<Database | null> {
     actorMap: { ...db.actorMap },
   };
 }
+
+export async function exportToClipboard() {
+  const db = await loadDatabase();
+  if (!db) {
+    return null;
+  }
+  const propMap = db.propMap;
+  const text = JSON.stringify(propMap, null, 2);
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("Props exported to clipboard successfully!");
+  } catch (err) {
+    console.log("MBC Extension: Failed to copy props to clipboard:", err);
+    alert("Failed to copy props to clipboard.");
+  }
+}
+
+export async function importFromClipboard() {
+  const db = await loadDatabase();
+  if (!db) {
+    return null;
+  }
+  try {
+    const text = await navigator.clipboard.readText();
+    const importedProps = JSON.parse(text);
+
+    // Ensure importedProps is of type Record<string, string>
+    if (
+      typeof importedProps !== "object" ||
+      importedProps === null ||
+      Array.isArray(importedProps)
+    ) {
+      throw new Error("Clipboard data is not a valid props object.");
+    }
+    if (Object.entries(importedProps).length > 10000) {
+      throw new Error("Too many props imported. Limit is 10,000.");
+    }
+    for (const key in importedProps) {
+      if (typeof importedProps[key] !== "string") {
+        throw new Error("All prop values must be strings.");
+      }
+      if (key.length !== 1) {
+        throw new Error("All prop keys must be single characters.");
+      }
+      if (importedProps[key].length > 100) {
+        throw new Error("Prop values must be less than 100 characters.");
+      }
+    }
+
+    // Merge imported props into the database
+    db.propMap = { ...db.propMap, ...importedProps };
+    await saveDatabase(db);
+
+    alert("Props imported from clipboard successfully!");
+  } catch (err) {
+    console.log("MBC Extension: Failed to read props from clipboard:", err);
+    alert("Failed to read props from clipboard.");
+  }
+}

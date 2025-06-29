@@ -1,17 +1,48 @@
 import * as React from "react";
 import { useState } from "react";
-import { exportDatabase } from "../util/database-operations";
+import {
+  exportDatabase,
+  exportToClipboard,
+  importFromClipboard,
+} from "../util/database-operations";
 import { TabPanelProps } from "./TabPanelProps";
+import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
 
 function SavedProps(p: { propMap: Record<string, string> }) {
   return (
-    <div style={{ whiteSpace: "pre" }}>
-      {Object.entries(p.propMap).map(([key, value]) => (
-        <div key={key}>
-          <strong>{key}:</strong> {value}
-        </div>
-      ))}
-    </div>
+    <>
+      <div>
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => exportToClipboard()}
+          >
+            Export to Clipboard
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => importFromClipboard()}
+          >
+            Import from Clipboard
+          </Button>
+        </Stack>
+      </div>
+      <div style={{ whiteSpace: "pre" }}>
+        {Object.entries(p.propMap).map(([key, value]) => (
+          <div key={key}>
+            <strong>{key}:</strong> {value}
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
 
