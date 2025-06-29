@@ -12,6 +12,7 @@ This Chrome extension enhances your experience on [Mandarin Blueprint](https://c
 - ⚡ **Seamless integration** with the Mandarin Blueprint course website
 - 🔄 **Automatic synchronization**: Whenever you enter a prop mapping on Mandarin Blueprint or Traverse.link, the extension saves it on both sites, keeping your props in sync across platforms.
 - 👁️ **View all mappings**: Click the extension icon to instantly see a list of all your saved prop mappings in a popup window.
+- 📋 **Import/Export props via clipboard**: Easily export all your prop mappings to the clipboard or import them from the clipboard using the popup UI. This makes it simple to back up or transfer your custom props.
 
 ## Installation
 
