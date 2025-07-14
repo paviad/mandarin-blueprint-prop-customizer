@@ -2,42 +2,97 @@ import { sendPropUpdateMessageToServiceWorker } from "../chrome/messages";
 import { getFromStorage, saveToStorage } from "../chrome/storage";
 import { Database } from "../model/database";
 
+const VERSION_KEY = "myVersion";
 const DATABASE_KEY = "myDatabase";
+const CHUNK_PREFIX_KEY = "chunk_";
 
 let database: Database;
 
 async function loadDatabase(): Promise<Database | null> {
   try {
-    const data = await getFromStorage(DATABASE_KEY);
-    let db: Partial<Database> = {};
-    if (data) {
-      try {
-        db = JSON.parse(data);
-      } catch {
-        // ignore parse error, will use empty objects
-      }
+    const version = await getFromStorage(VERSION_KEY);
+
+    console.log(`MBC Extension: Loading database version ${version}`);
+
+    let rc: Database;
+    if (version === "1") {
+      rc = await getDatabaseV1();
+    } else if (!version) {
+      rc = await getDatabaseV0();
+    } else {
+      console.log("MBC Extension: No version found, failed to load database");
+      return null;
     }
-    const rc = {
-      propMap: db.propMap ?? {},
-      setMap: db.setMap ?? {},
-      actorMap: db.actorMap ?? {},
-    };
 
     database = rc;
 
     return database;
   } catch (error) {
-    console.log("MBC Extension: Failed to load database.");
+    console.log("MBC Extension: Failed to load database.", error);
     return null;
   }
 }
 
+async function getDatabaseV1(): Promise<Database> {
+  const numberOfChunks = +((await getFromStorage("numberOfChunks")) || 0);
+
+  console.log(`MBC Extension: Loading database in ${numberOfChunks} chunks`);
+
+  let fullString = "";
+  for (let i = 0; i < numberOfChunks; i++) {
+    const chunk = await getFromStorage(`${CHUNK_PREFIX_KEY}${i}`);
+    if (chunk === null) {
+      console.log(`MBC Extension: Missing chunk ${i}, failed to load database`);
+      throw new Error(`Missing chunk ${i}`);
+    }
+    fullString += chunk;
+    console.log(`MBC Extension: Loaded chunk ${i} of size ${chunk.length}`);
+  }
+
+  let db: Partial<Database> = {};
+  if (fullString) {
+    db = JSON.parse(fullString);
+  }
+
+  const rc = {
+    propMap: db.propMap ?? {},
+    setMap: db.setMap ?? {},
+    actorMap: db.actorMap ?? {},
+  };
+  return rc;
+}
+
 async function saveDatabase(db: Database): Promise<void> {
   try {
-    await saveToStorage(DATABASE_KEY, JSON.stringify(db));
+    await saveDatabaseV1(db);
   } catch (error) {
     console.log("MBC Extension: Failed to save database.", error);
   }
+}
+
+async function saveDatabaseV1(db: Database): Promise<void> {
+  const fullString = JSON.stringify(db);
+
+  console.log(
+    `MBC Extension: Saving database of size ${fullString.length} bytes`
+  );
+
+  const chunkSize = chrome.storage.sync.QUOTA_BYTES_PER_ITEM;
+  const numberOfChunks = Math.ceil(fullString.length / chunkSize);
+  console.log(
+    `MBC Extension: Saving database in ${numberOfChunks} chunks, each ${chunkSize} bytes`
+  );
+  await saveToStorage("numberOfChunks", numberOfChunks.toString());
+  for (let i = 0; i < numberOfChunks; i++) {
+    const start = i * chunkSize;
+    const end = start + chunkSize;
+    const chunk = fullString.slice(start, end);
+
+    console.log(`MBC Extension: Saving chunk ${i} of size ${chunk.length}`);
+
+    await saveToStorage(`${CHUNK_PREFIX_KEY}${i}`, chunk);
+  }
+  await saveToStorage(VERSION_KEY, "1");
 }
 
 export async function updateProp(char: string, value: string) {
@@ -148,4 +203,28 @@ export async function importFromClipboard() {
     console.log("MBC Extension: Failed to read props from clipboard:", err);
     alert("Failed to read props from clipboard.");
   }
+}
+
+// Obsolete functions for backward compatibility
+
+async function getDatabaseV0() {
+  const data = await getFromStorage(DATABASE_KEY);
+  let db: Partial<Database> = {};
+  if (data) {
+    try {
+      db = JSON.parse(data);
+    } catch {
+      // ignore parse error, will use empty objects
+    }
+  }
+  const rc = {
+    propMap: db.propMap ?? {},
+    setMap: db.setMap ?? {},
+    actorMap: db.actorMap ?? {},
+  };
+  return rc;
+}
+
+async function saveDatabaseV0(db: Database) {
+  await saveToStorage(DATABASE_KEY, JSON.stringify(db));
 }
