@@ -10,7 +10,7 @@ module.exports = {
   },
   mode: "production",
   optimization: {
-    minimize: false,
+    // minimize: false,
     usedExports: true,
     splitChunks: {
       chunks: "all",
