@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import { Subject } from "rxjs";
 import { sendPropUpdateMessageToServiceWorker } from "../chrome/messages";
 import { getFromStorage, saveToStorage } from "../chrome/storage";
 import { Database } from "../model/database";
@@ -73,7 +73,11 @@ async function getDatabaseV1(): Promise<Database> {
       console.log(`MBC Extension: Missing chunk ${i}, failed to load database`);
       throw new Error(`Missing chunk ${i}`);
     }
-    fullString += chunk;
+
+    const bytes = Uint8Array.from(atob(chunk), (c) => c.charCodeAt(0));
+    const decodedChunk = new TextDecoder().decode(bytes);
+    fullString += decodedChunk;
+
     console.log(`MBC Extension: Loaded chunk ${i} of size ${chunk.length}`);
   }
 
@@ -100,27 +104,28 @@ async function saveDatabase(db: Database): Promise<void> {
 }
 
 async function saveDatabaseV1(db: Database): Promise<void> {
-  const fullString = JSON.stringify(db);
+  let fullString = JSON.stringify(db);
+
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(fullString);
+  fullString = btoa(String.fromCharCode(...bytes));
 
   console.log(
     `MBC Extension: Saving database of size ${fullString.length} bytes`
   );
 
-  const chunkSize = chrome.storage.sync.QUOTA_BYTES_PER_ITEM;
-  const numberOfChunks = Math.ceil(fullString.length / chunkSize);
-  console.log(
-    `MBC Extension: Saving database in ${numberOfChunks} chunks, each ${chunkSize} bytes`
-  );
-  await saveToStorage("numberOfChunks", numberOfChunks.toString());
-  for (let i = 0; i < numberOfChunks; i++) {
-    const start = i * chunkSize;
-    const end = start + chunkSize;
-    const chunk = fullString.slice(start, end);
+  const chunkSize = chrome.storage.sync.QUOTA_BYTES_PER_ITEM - 20; // minus 20 for key length
 
-    console.log(`MBC Extension: Saving chunk ${i} of size ${chunk.length}`);
-
+  let i = 0;
+  while (fullString.length > 0) {
+    const chunk = fullString.slice(0, chunkSize);
+    console.log(`MBC Extension: Saved chunk ${i} of size ${chunk.length}`);
     await saveToStorage(`${CHUNK_PREFIX_KEY}${i}`, chunk);
+    fullString = fullString.slice(chunkSize);
+    i++;
   }
+
+  await saveToStorage("numberOfChunks", i.toString());
   await saveToStorage(VERSION_KEY, "1");
 }
 
