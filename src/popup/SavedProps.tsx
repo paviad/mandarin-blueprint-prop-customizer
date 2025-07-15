@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import {
+  databaseChanged$,
   exportDatabase,
   exportToClipboard,
   importFromClipboard,
@@ -56,7 +57,13 @@ export function SavedPropsTab(props: TabPanelProps) {
       setProps(db.propMap);
     }
     fetchProps();
-  });
+    const subscription = databaseChanged$.subscribe((db) => {
+      setProps(db.propMap);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <div

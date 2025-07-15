@@ -8,7 +8,8 @@ import { initializeContentScriptCommunication } from "./chrome/messages";
 import { replaceMappingInUi } from "./dom/Prop";
 import { disseminateSettings, settings$ } from "./util/settings-operations";
 import { distinctUntilChanged, map } from "rxjs";
-import { updateDefaultMappingVisibility } from './dom/mb/update-default-mapping-visibility';
+import { updateDefaultMappingVisibility } from "./dom/mb/update-default-mapping-visibility";
+import { invalidateDbCache } from "./util/database-operations";
 
 window.addEventListener("load", async () => {
   domUpdate.subscribe((info) => {
@@ -33,6 +34,7 @@ initializeContentScriptCommunication((request) => {
     case "propUpdate":
       replaceMappingInUi(request.char, request.value);
       updateTraverseIfInPickAPropPage(request.char, request.value);
+      invalidateDbCache();
       break;
     default:
       request satisfies never; // Ensure all cases are handled

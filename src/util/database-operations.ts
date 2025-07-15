@@ -1,3 +1,4 @@
+import { Subject } from 'rxjs';
 import { sendPropUpdateMessageToServiceWorker } from "../chrome/messages";
 import { getFromStorage, saveToStorage } from "../chrome/storage";
 import { Database } from "../model/database";
@@ -7,8 +8,23 @@ const DATABASE_KEY = "myDatabase";
 const CHUNK_PREFIX_KEY = "chunk_";
 
 let database: Database;
+let cacheValid = false;
+
+const databaseChanged = new Subject<Database>();
+export const databaseChanged$ = databaseChanged.asObservable();
+
+export function invalidateDbCache() {
+  cacheValid = false;
+}
+
+export function getCachedDatabase(): Database | null {
+  return database;
+}
 
 async function loadDatabase(): Promise<Database | null> {
+  if (cacheValid && database) {
+    return database;
+  }
   try {
     const version = await getFromStorage(VERSION_KEY);
 
@@ -24,13 +40,25 @@ async function loadDatabase(): Promise<Database | null> {
       return null;
     }
 
-    database = rc;
+    console.log(
+      `MBC Extension: Loaded database with ${
+        Object.keys(rc.propMap).length
+      } props`
+    );
+
+    internalSetDatabaseUpdateSubscribers(rc);
 
     return database;
   } catch (error) {
     console.log("MBC Extension: Failed to load database.", error);
     return null;
   }
+}
+
+function internalSetDatabaseUpdateSubscribers(rc: Database) {
+  databaseChanged.next(rc);
+  database = rc;
+  cacheValid = true;
 }
 
 async function getDatabaseV1(): Promise<Database> {
@@ -65,6 +93,7 @@ async function getDatabaseV1(): Promise<Database> {
 async function saveDatabase(db: Database): Promise<void> {
   try {
     await saveDatabaseV1(db);
+    internalSetDatabaseUpdateSubscribers(db);
   } catch (error) {
     console.log("MBC Extension: Failed to save database.", error);
   }
@@ -139,11 +168,7 @@ export async function exportDatabase(): Promise<Database | null> {
     return null;
   }
 
-  return {
-    propMap: { ...db.propMap },
-    setMap: { ...db.setMap },
-    actorMap: { ...db.actorMap },
-  };
+  return db;
 }
 
 export async function exportToClipboard() {
@@ -184,13 +209,19 @@ export async function importFromClipboard() {
     }
     for (const key in importedProps) {
       if (typeof importedProps[key] !== "string") {
-        throw new Error("All prop values must be strings.");
+        throw new Error(
+          `All prop values must be strings. Bad value for key ${key}: ${importedProps[key]}`
+        );
       }
-      if (key.length !== 1) {
-        throw new Error("All prop keys must be single characters.");
+      if (key.length > 2) {
+        throw new Error(
+          `All prop keys must be single characters. Bad key: ${key}`
+        );
       }
       if (importedProps[key].length > 100) {
-        throw new Error("Prop values must be less than 100 characters.");
+        throw new Error(
+          `Prop values must be less than 100 characters. Bad value for key ${key}: ${importedProps[key]}`
+        );
       }
     }
 
@@ -200,7 +231,7 @@ export async function importFromClipboard() {
 
     alert("Props imported from clipboard successfully!");
   } catch (err) {
-    console.log("MBC Extension: Failed to read props from clipboard:", err);
+    console.error("MBC Extension: Failed to read props from clipboard:", err);
     alert("Failed to read props from clipboard.");
   }
 }
